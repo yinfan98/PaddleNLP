@@ -54,7 +54,13 @@ else:
                 ),
             ),
             ("blenderbot", "BlenderbotTokenizer"),
-            ("bloom", "BloomTokenizer"),
+            (
+                "bloom",
+                (
+                    "BloomTokenizer",
+                    "BloomTokenizerFast" if is_tokenizers_available() else None
+                ),
+            ),
             ("clip", "CLIPTokenizer"),
             ("codegen", "CodeGenTokenizer"),
             ("convbert", "ConvBertTokenizer"),

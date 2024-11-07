@@ -24,6 +24,7 @@ from paddlenlp.transformers.auto.tokenizer import TOKENIZER_MAPPING
 from paddlenlp.transformers.bert.configuration import BertConfig
 from paddlenlp.transformers.bert.tokenizer import BertTokenizer
 from paddlenlp.transformers.bert.tokenizer_fast import BertTokenizerFast
+
 from paddlenlp.utils.env import TOKENIZER_CONFIG_NAME
 
 from ...utils.test_module.custom_configuration import CustomConfig

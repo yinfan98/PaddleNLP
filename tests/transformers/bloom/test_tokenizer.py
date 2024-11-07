@@ -18,6 +18,8 @@ import os
 import unittest
 
 from paddlenlp.transformers import BloomTokenizer
+# bloom
+from paddlenlp.transformers.bloom.tokenizer_fast import BloomTokenizerFast
 
 from ..test_tokenizer_common import TokenizerTesterMixin
 
@@ -30,6 +32,7 @@ VOCAB_FILES_NAMES = {
 class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
 
     tokenizer_class = BloomTokenizer
+    rust_tokenizer_class = BloomTokenizerFast
     from_pretrained_kwargs = {"add_prefix_space": True}
     test_decode_token = True
     test_seq2seq = False
@@ -73,6 +76,10 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
             fp.write("\n".join(merges))
 
     def get_tokenizer(self, **kwargs):
+        kwargs.update(self.special_tokens_map)
+        return BloomTokenizer.from_pretrained(self.tmpdirname, **kwargs)
+
+    def get_tokenizer_fast(self, **kwargs):
         kwargs.update(self.special_tokens_map)
         return BloomTokenizer.from_pretrained(self.tmpdirname, **kwargs)
 
