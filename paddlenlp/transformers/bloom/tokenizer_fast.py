@@ -13,10 +13,12 @@
 # limitations under the License.
 
 import json
+import pickle
 from typing import List, Optional, Tuple
 
 from tokenizers import normalizers
 
+from ..tokenizer_utils_base import BatchEncoding
 from ..tokenizer_utils_fast import PretrainedTokenizerFast
 from .tokenizer import BloomTokenizer
 

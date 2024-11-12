@@ -444,7 +444,7 @@ class LlamaConverter(SpmConverter):
 
 SLOW_TO_FAST_CONVERTERS = {
     "LlamaTokenizer": LlamaConverter,
-    "BertTokenizer": BertConverter,
+    "BertTokenizer": BertConverter
 }
 
 
