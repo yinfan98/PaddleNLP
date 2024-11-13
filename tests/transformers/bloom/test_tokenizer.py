@@ -17,11 +17,8 @@ import json
 import os
 import unittest
 
-from paddlenlp.transformers import BloomTokenizerFast
-
-from tests.transformers.test_tokenizer_common import (
-    TokenizerTesterMixin
-)
+from paddlenlp.transformers import BloomTokenizer, BloomTokenizerFast
+from tests.transformers.test_tokenizer_common import TokenizerTesterMixin
 
 VOCAB_FILES_NAMES = {
     "vocab_file": "vocab.json",
@@ -93,7 +90,7 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
 
         input_tokens = tokens + [tokenizer.unk_token]
         input_bpe_tokens = [14, 15, 10, 9, 3, 2, 15, 19]
-        
+
         self.assertListEqual(tokenizer.convert_tokens_to_ids(input_tokens), input_bpe_tokens)
 
     def test_pretokenized_inputs(self, *args, **kwargs):
@@ -149,7 +146,6 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
         # short slice pair does have padding
         self.assertTrue(pad_token_id in out_p2["input_ids"][1])
         self.assertTrue(0 in out_p2["attention_mask"][1])
-        
 
     def test_add_bos_token_slow(self):
         bos_token = "$$$"
@@ -171,7 +167,6 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
 
         self.assertEqual(decode_s.split()[0], bos_token)
         self.assertTrue(all(d.split()[0] == bos_token for d in decode_s2))
-
 
     # tokenizer has no padding token
     def test_padding_different_model_input_name(self):
