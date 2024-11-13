@@ -12,15 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import pickle
-from typing import List, Optional, Tuple
-
-from tokenizers import normalizers
+from typing import Optional, Tuple
 
 from ..tokenizer_utils_base import BatchEncoding
 from ..tokenizer_utils_fast import PretrainedTokenizerFast
-from .tokenizer import BloomTokenizer
 
 VOCAB_FILES_NAMES = {"tokenizer_file": "tokenizer.json"}
 
