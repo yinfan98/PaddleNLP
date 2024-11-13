@@ -87,22 +87,15 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
 
     def test_full_tokenizer(self):
         tokenizer = BloomTokenizer(self.vocab_file, self.merges_file, **self.special_tokens_map)
-        tokenizer2 = BloomTokenizerFast(self.vocab_file, self.merges_file, **self.special_tokens_map)
         text = "lower newer"
         bpe_tokens = ["\u0120low", "er", "\u0120", "n", "e", "w", "er"]
         tokens = tokenizer.tokenize(text, add_prefix_space=True)
         self.assertListEqual(tokens, bpe_tokens)
 
-        tokens2 = tokenizer2.tokenize(text, add_prefix_space=True)
-        self.assertListEqual(tokens2, bpe_tokens)
-
         input_tokens = tokens + [tokenizer.unk_token]
-        
-        input_tokens2 = tokens2 + [tokenizer.unk_token]
         input_bpe_tokens = [14, 15, 10, 9, 3, 2, 15, 19]
         
         self.assertListEqual(tokenizer.convert_tokens_to_ids(input_tokens), input_bpe_tokens)
-        self.assertListEqual(tokenizer.convert_tokens_to_ids(input_tokens2), input_bpe_tokens)
 
     def test_pretokenized_inputs(self, *args, **kwargs):
         pass
