@@ -17,7 +17,6 @@ import json
 import os
 import unittest
 
-from paddlenlp.transformers import BloomTokenizer
 from paddlenlp.transformers import BloomTokenizerFast
 
 from tests.transformers.test_tokenizer_common import (
