@@ -20,6 +20,7 @@ import unittest
 from paddlenlp.transformers import BloomTokenizer, BloomTokenizerFast
 from tests.transformers.test_tokenizer_common import TokenizerTesterMixin
 
+
 VOCAB_FILES_NAMES = {
     "vocab_file": "vocab.json",
     "merges_file": "merges.txt",
