@@ -76,10 +76,6 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
         kwargs.update(self.special_tokens_map)
         return BloomTokenizer.from_pretrained(self.tmpdirname, **kwargs)
 
-    def get_rust_tokenizer(self, **kwargs):
-        kwargs.update(self.special_tokens_map)
-        return BloomTokenizerFast.from_pretrained(self.tmpdirname, **kwargs)
-
     def get_input_output_texts(self, tokenizer):
         input_text = "lower newer"
         output_text = "lower newer"
@@ -102,12 +98,12 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
         """
         Assert that the created tokens are the same than the hard-coded ones
         """
-        tokenizer = self.get_rust_tokenizer()
+        tokenizer = self.rust_tokenizer_class.from_pretrained("bigscience/bloom-560m")
 
         INPUT_SENTENCES = ["The quick brown fox</s>", "jumps over the lazy dog</s>"]
         TARGET_TOKENS = [[2175, 23714, 73173, 144252, 2], [77, 132619, 3478, 368, 109586, 35433, 2]]
 
-        computed_tokens = tokenizer.batch_encode_plus(INPUT_SENTENCES)["input_ids"]
+        computed_tokens = tokenizer.batch_encode(INPUT_SENTENCES)["input_ids"]
         self.assertListEqual(TARGET_TOKENS, computed_tokens)
 
         decoded_tokens = tokenizer.batch_decode(computed_tokens)

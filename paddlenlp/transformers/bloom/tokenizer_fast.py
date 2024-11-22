@@ -17,6 +17,7 @@ from typing import Optional, Tuple
 
 from ..tokenizer_utils_base import BatchEncoding
 from ..tokenizer_utils_fast import PretrainedTokenizerFast
+from .tokenizer import BloomTokenizer
 
 VOCAB_FILES_NAMES = {"tokenizer_file": "tokenizer.json"}
 
@@ -65,7 +66,7 @@ class BloomTokenizerFast(PretrainedTokenizerFast):
 
     resource_files_names = VOCAB_FILES_NAMES
     model_input_names = ["input_ids", "attention_mask"]
-    slow_tokenizer_class = None
+    slow_tokenizer_class = BloomTokenizer
 
     def __init__(
         self,
