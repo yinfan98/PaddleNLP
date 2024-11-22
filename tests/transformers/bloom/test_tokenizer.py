@@ -93,6 +93,22 @@ class BloomTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
 
         self.assertListEqual(tokenizer.convert_tokens_to_ids(input_tokens), input_bpe_tokens)
 
+    # test encode_plus
+    def test_encodings_from_sample_data(self):
+        """
+        Assert that the created tokens are the same than the hard-coded ones
+        """
+        tokenizer = self.get_rust_tokenizer()
+
+        INPUT_SENTENCES = ["The quick brown fox</s>", "jumps over the lazy dog</s>"]
+        TARGET_TOKENS = [[2175, 23714, 73173, 144252, 2], [77, 132619, 3478, 368, 109586, 35433, 2]]
+
+        computed_tokens = tokenizer.batch_encode_plus(INPUT_SENTENCES)["input_ids"]
+        self.assertListEqual(TARGET_TOKENS, computed_tokens)
+
+        decoded_tokens = tokenizer.batch_decode(computed_tokens)
+        self.assertListEqual(decoded_tokens, INPUT_SENTENCES)
+
     def test_pretokenized_inputs(self, *args, **kwargs):
         pass
 
