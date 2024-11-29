@@ -56,7 +56,10 @@ else:
             ("blenderbot", "BlenderbotTokenizer"),
             (
                 "bloom",
-                ("BloomTokenizer", "BloomTokenizerFast" if is_tokenizers_available() else None),
+                (
+                    "BloomTokenizer", 
+                    "BloomTokenizerFast" if is_tokenizers_available() else None
+                ),
             ),
             ("clip", "CLIPTokenizer"),
             ("codegen", "CodeGenTokenizer"),
@@ -124,7 +127,13 @@ else:
             ("ernie_vil", "ErnieViLTokenizer"),
             ("glm", "GLMGPT2Tokenizer"),
             ("qwen", "QWenTokenizer"),
-            ("qwen2", "Qwen2Tokenizer"),
+            (
+                "qwen2", 
+                (
+                    "Qwen2Tokenizer",
+                    "Qwen2TokenizerFast" if is_tokenizers_available() else None
+                )
+            ),
             ("yuan", "YuanTokenizer"),
         ]
     )
