@@ -285,7 +285,8 @@ class InitTrackerMeta(type(Layer)):
             # registed helper by `pre_init_func`
             if pre_init_func:
                 pre_init_func(self, init_func, *args, **kwargs)
-            # keep full configuration
+            # keep full configuration\
+            print(args, kwargs)
             init_func(self, *args, **kwargs)
             # registed helper by `post_init_func`
             if post_init_func:
