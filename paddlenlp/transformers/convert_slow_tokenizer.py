@@ -487,7 +487,7 @@ class Qwen2Converter(Converter):
 
 
 SLOW_TO_FAST_CONVERTERS = {
-    "LlamaTokenizer": LlamaConverter, 
+    "LlamaTokenizer": LlamaConverter,
     "BertTokenizer": BertConverter,
     "Qwen2Tokenizer": Qwen2Converter,
 }
