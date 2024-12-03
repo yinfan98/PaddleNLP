@@ -25,7 +25,7 @@ VOCAB_FILES_NAMES = {"tokenizer_file": "tokenizer.json"}
 
 class BloomTokenizerFast(PretrainedTokenizerFast):
     r"""
-    Construct a "fast" Bloom tokenizer (backed by PaddleNLP's *tokenizers* library). Based on byte-level
+    Construct a "fast" Bloom tokenizer (backed by HuggingFace's *tokenizers* library). Based on byte-level
     Byte-Pair-Encoding.
 
     This tokenizer has been trained to treat spaces like parts of the tokens (a bit like sentencepiece) so a word will
