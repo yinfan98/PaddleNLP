@@ -830,7 +830,6 @@ class ChatTemplateMixin:
         kwargs["from_hf_hub"] = from_hf_hub
         kwargs["from_aistudio"] = from_aistudio
         kwargs["return_tokenizer_file_dir"] = True
-        print("tokenizer check1: ", pretrained_model_name_or_path, args, kwargs)
         tokenizer, tokenizer_config_file_dir = super().from_pretrained(pretrained_model_name_or_path, *args, **kwargs)
 
         # load chat-template

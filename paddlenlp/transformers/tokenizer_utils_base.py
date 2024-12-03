@@ -1582,7 +1582,6 @@ class PretrainedTokenizerBase(SpecialTokensMixin):
             if resolved_vocab_files[file_id] is not None:
                 cache_dir = os.path.dirname(resolved_vocab_files[file_id])
                 break
-        print(pretrained_model_name_or_path)
         return cls._from_pretrained(
             resolved_vocab_files,
             pretrained_model_name_or_path,
@@ -1610,7 +1609,6 @@ class PretrainedTokenizerBase(SpecialTokensMixin):
             from_slow = kwargs.get("from_slow", False)
         else:
             from_slow = kwargs.get("from_slow", True)
-        print(cls.__name__, from_slow)
         has_tokenizer_file = resolved_vocab_files.get("tokenizer_file", None) is not None
         if (from_slow or not has_tokenizer_file) and cls.slow_tokenizer_class is not None:
             slow_tokenizer = (cls.slow_tokenizer_class)._from_pretrained(
@@ -1713,7 +1711,6 @@ class PretrainedTokenizerBase(SpecialTokensMixin):
 
         # TODO(guosheng): avoid reduplication of position args and key word args
         try:
-            print("init input: ", init_inputs, init_kwargs)
             tokenizer = cls(*init_inputs, **init_kwargs)
         except import_protobuf_decode_error():
             logger.info(
