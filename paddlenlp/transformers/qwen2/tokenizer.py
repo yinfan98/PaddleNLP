@@ -307,7 +307,6 @@ class Qwen2Tokenizer(PretrainedTokenizer):
             **kwargs,
         )
 
-
     def save_vocabulary(self, save_directory: str, filename_prefix: Optional[str] = None) -> Tuple[str]:
         if not os.path.isdir(save_directory):
             logger.error(f"Vocabulary path ({save_directory}) should be a directory")
