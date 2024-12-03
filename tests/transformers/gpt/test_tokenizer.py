@@ -31,6 +31,7 @@ class GPTTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
 
     tokenizer_class = GPTTokenizer
     rust_tokenizer_class = GPTTokenizerFast
+    test_rust_tokenizer = True
     from_pretrained_kwargs = {"add_prefix_space": True}
     test_seq2seq = False
 
@@ -76,6 +77,10 @@ class GPTTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
         kwargs.update(self.special_tokens_map)
         return GPTTokenizer.from_pretrained(self.tmpdirname, **kwargs)
 
+    def get_rust_tokenizer(self, **kwargs):
+        kwargs.update(self.special_tokens_map)
+        return GPTTokenizerFast.from_pretrained(self.tmpdirname, **kwargs)
+
     def get_input_output_texts(self, tokenizer):
         input_text = "lower newer"
         output_text = "lower newer"
@@ -90,24 +95,38 @@ class GPTTokenizationTest(TokenizerTesterMixin, unittest.TestCase):
 
         input_tokens = tokens + [tokenizer.unk_token]
         input_bpe_tokens = [14, 15, 10, 9, 3, 2, 15, 19]
-        
+
         self.assertListEqual(tokenizer.convert_tokens_to_ids(input_tokens), input_bpe_tokens)
 
-    # test encode_plus
-    def test_encodings_from_sample_data(self):
-        """
-        Assert that the created tokens are the same than the hard-coded ones
-        """
-        tokenizer = self.rust_tokenizer_class.from_pretrained("gpt2-small-en")
+    def test_rust_and_python_full_tokenizers(self):
+        if not self.test_rust_tokenizer:
+            self.skipTest(reason="test_rust_tokenizer is set to False")
 
-        INPUT_SENTENCES = ["The quick brown fox</s>", "jumps over the lazy dog</s>"]
-        TARGET_TOKENS = [[2175, 23714, 73173, 144252, 2], [77, 132619, 3478, 368, 109586, 35433, 2]]
+        tokenizer = self.get_tokenizer()
+        rust_tokenizer = self.get_rust_tokenizer(add_prefix_space=True)
 
-        computed_tokens = tokenizer.batch_encode(INPUT_SENTENCES)["input_ids"]
-        self.assertListEqual(TARGET_TOKENS, computed_tokens)
+        sequence = "lower newer"
 
-        decoded_tokens = tokenizer.batch_decode(computed_tokens)
-        self.assertListEqual(decoded_tokens, INPUT_SENTENCES)
+        # Testing tokenization
+        tokens = tokenizer.tokenize(sequence, add_prefix_space=True)
+        rust_tokens = rust_tokenizer.tokenize(sequence)
+        self.assertListEqual(tokens, rust_tokens)
+
+        # Testing conversion to ids without special tokens
+        ids = tokenizer.encode(sequence, add_special_tokens=False, add_prefix_space=True)["input_ids"]
+        rust_ids = rust_tokenizer.encode(sequence, add_special_tokens=False)["input_ids"]
+        self.assertListEqual(ids, rust_ids)
+
+        # Testing conversion to ids with special tokens
+        rust_tokenizer = self.get_rust_tokenizer(add_prefix_space=True)
+        ids = tokenizer.encode(sequence, add_prefix_space=True)["input_ids"]
+        rust_ids = rust_tokenizer.encode(sequence)["input_ids"]
+        self.assertListEqual(ids, rust_ids)
+
+        # Testing the unknown token
+        input_tokens = tokens + [rust_tokenizer.unk_token]
+        input_bpe_tokens = [14, 15, 10, 9, 3, 2, 15, 19]
+        self.assertListEqual(rust_tokenizer.convert_tokens_to_ids(input_tokens), input_bpe_tokens)
 
     def test_pretokenized_inputs(self, *args, **kwargs):
         pass

@@ -20,7 +20,6 @@ from ..tokenizer_utils import AddedToken
 from ..tokenizer_utils_fast import PretrainedTokenizerFast
 from .tokenizer import Qwen2Tokenizer
 
-
 VOCAB_FILES_NAMES = {
     "vocab_file": "vocab.json",
     "merges_file": "merges.txt",
@@ -73,6 +72,7 @@ class Qwen2TokenizerFast(PretrainedTokenizerFast):
             The token used for padding, for example when batching sequences of different lengths.
     """
 
+    resource_files_names = VOCAB_FILES_NAMES
     vocab_files_names = VOCAB_FILES_NAMES
     model_input_names = ["input_ids", "attention_mask"]
     slow_tokenizer_class = Qwen2Tokenizer

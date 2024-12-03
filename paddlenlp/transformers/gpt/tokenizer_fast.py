@@ -20,9 +20,10 @@ from tokenizers import pre_tokenizers
 
 from ..tokenizer_utils_base import BatchEncoding
 from ..tokenizer_utils_fast import PretrainedTokenizerFast
-from .tokenizer import GPTTokenizer, GPTChineseTokenizer
+from .tokenizer import GPTTokenizer
 
 VOCAB_FILES_NAMES = {"vocab_file": "vocab.json", "merges_file": "merges.txt"}
+
 
 class GPTTokenizerFast(PretrainedTokenizerFast):
     """
@@ -75,11 +76,12 @@ class GPTTokenizerFast(PretrainedTokenizerFast):
             Whether or not to add an initial space to the input. This allows to treat the leading word just as any
             other word. (GPT tokenizer detect beginning of words by the preceding space).
     """
-    
+
+    resource_files_names = VOCAB_FILES_NAMES
     vocab_files_names = VOCAB_FILES_NAMES
     model_input_names = ["input_ids", "attention_mask"]
     slow_tokenizer_class = GPTTokenizer
-    
+
     def __init__(
         self,
         vocab_file=None,
@@ -99,9 +101,9 @@ class GPTTokenizerFast(PretrainedTokenizerFast):
             add_prefix_space=add_prefix_space,
             **kwargs,
         )
-        
+
         self.add_bos_token = kwargs.pop("add_bos_token", False)
-        
+
         pre_tok_state = json.loads(self.backend_tokenizer.pre_tokenizer.__getstate__())
         if pre_tok_state.get("add_prefix_space", add_prefix_space) != add_prefix_space:
             pre_tok_class = getattr(pre_tokenizers, pre_tok_state.pop("type"))
@@ -109,7 +111,7 @@ class GPTTokenizerFast(PretrainedTokenizerFast):
             self.backend_tokenizer.pre_tokenizer = pre_tok_class(**pre_tok_state)
 
         self.add_prefix_space = add_prefix_space
-        
+
     def _batch_encode_plus(self, *args, **kwargs) -> BatchEncoding:
         is_split_into_words = kwargs.get("is_split_into_words", False)
         assert self.add_prefix_space or not is_split_into_words, (
@@ -132,5 +134,3 @@ class GPTTokenizerFast(PretrainedTokenizerFast):
     def save_vocabulary(self, save_directory: str, filename_prefix: Optional[str] = None) -> Tuple[str]:
         files = self._tokenizer.model.save(save_directory, name=filename_prefix)
         return tuple(files)
-    
-    
