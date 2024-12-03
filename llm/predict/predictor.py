@@ -673,18 +673,6 @@ class StaticInferencePredictor(InferencePredictorMixin):
             config.enable_use_gpu(100, device_id)
         config.enable_new_executor()
 
-        if self.tensor_parallel_degree > 1:
-            trainer_endpoints = fleet.worker_endpoints()
-            current_endpoint = trainer_endpoints[self.tensor_parallel_rank]
-
-            dist_config = config.dist_config()
-            dist_config.set_ranks(self.tensor_parallel_degree, self.tensor_parallel_rank)
-            dist_config.set_endpoints(trainer_endpoints, current_endpoint)
-            dist_config.enable_dist_model(True)
-
-            dist_config.set_comm_init_config(os.path.join(predictor_args.model_name_or_path, "rank_mapping.csv"))
-            config.set_dist_config(dist_config)
-
         predictor = paddle.inference.create_predictor(config)
         return predictor
 
@@ -733,10 +721,9 @@ class DygraphInferencePredictor(InferencePredictorMixin):
                 inputs[key] = paddle.to_tensor(inputs[key])
 
         inputs["cache_kvs"] = self.cache_kvs
-        self.model.generate(
+        return self.model.generate(
             **inputs,
         )
-        return None
 
 
 class BlockInferencePredictorMixin(BasePredictor):
@@ -914,6 +901,12 @@ class BlockInferencePredictorMixin(BasePredictor):
             self.model_inputs["rope_emb"] = paddle.concat([src_mask.reshape([-1]), tgt_mask.reshape([-1])])
 
     def _preprocess(self, input_text: list[str]):
+        len_input_text = len(input_text)
+        if len_input_text < self.batch_size:
+            padding_len = self.batch_size - len_input_text
+            input_text += [""] * padding_len
+            assert len(input_text) == self.batch_size
+
         if self.tokenizer.chat_template is not None:
             input_text = [input_text] if isinstance(input_text, str) else input_text
             input_text = [self.tokenizer.apply_chat_template(sentence, tokenize=False) for sentence in input_text]
@@ -1073,7 +1066,7 @@ class DygraphBlockInferencePredictor(BlockInferencePredictorMixin):
         if self.tensor_parallel_rank == 0:
             outputs = []
             output_tokens = []
-            while len(outputs) < self.batch_size:
+            while len(outputs) < len(input_texts):
                 result = result_queue.get(timeout=1)
                 outputs.append(result[-1])
                 output_tokens.append(result[-2])
@@ -1172,18 +1165,6 @@ class StaticBlockInferencePredictor(BlockInferencePredictorMixin):
             config.switch_ir_optim(True)
             pass_builder = config.pass_builder()
             passes.addPasses(pass_builder, self.model_config.model_type, self.model_config.quant_type)
-
-        if self.tensor_parallel_degree > 1:
-            trainer_endpoints = fleet.worker_endpoints()
-            current_endpoint = trainer_endpoints[self.tensor_parallel_rank]
-
-            dist_config = config.dist_config()
-            dist_config.set_ranks(self.tensor_parallel_degree, self.tensor_parallel_rank)
-            dist_config.set_endpoints(trainer_endpoints, current_endpoint)
-            dist_config.enable_dist_model(True)
-
-            dist_config.set_comm_init_config(os.path.join(predictor_args.model_name_or_path, "rank_mapping.csv"))
-            config.set_dist_config(dist_config)
 
         self.predictor = paddle.inference.create_predictor(config)
 

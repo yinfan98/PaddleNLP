@@ -1534,6 +1534,12 @@ class PretrainedTokenizerBase(SpecialTokensMixin):
             "chat_template_file": CHAT_TEMPLATE_CONFIG_NAME,
         }
 
+        if hasattr(cls, "vocab_files_names") and len(cls.resource_files_names) == 0:
+            cls.resource_files_names = copy.deepcopy(cls.vocab_files_names)
+            logger.error(
+                "The attribute 'vocab_files_names' is deprecated. Please use 'resource_files_names' instead.",
+                DeprecationWarning,
+            )
         vocab_files_target = {**cls.resource_files_names, **additional_files_names}
         # From HF Hub or AI Studio
         if from_hf_hub or from_aistudio:
@@ -1599,7 +1605,7 @@ class PretrainedTokenizerBase(SpecialTokensMixin):
         return_tokenizer_file_dir=False,
         from_hf_hub=False,
         **kwargs,
-    ):  
+    ):
         if cls.__name__.endswith("Fast"):
             from_slow = kwargs.get("from_slow", False)
         else:
