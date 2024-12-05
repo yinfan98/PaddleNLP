@@ -22,6 +22,7 @@ from .import_utils import *
 from .infohub import infohub
 from .initializer import to
 from .serialization import load_torch
+from .version import require_version
 
 # hack impl for EagerParamBase to function
 # https://github.com/PaddlePaddle/Paddle/blob/fa44ea5cf2988cd28605aedfb5f2002a63018df7/python/paddle/nn/layer/layers.py#L2077

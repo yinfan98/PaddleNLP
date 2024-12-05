@@ -68,7 +68,7 @@ else:
             ("ernie_m", "ErnieMTokenizer"),
             ("fnet", "FNetTokenizer"),
             ("funnel", "FunnelTokenizer"),
-            ("gemma", "GemmaTokenizer"),
+            ("gemma", ("GemmaTokenizer", "GemmaTokenizerFast" if is_tokenizers_available() else None)),
             ("jamba", "JambaTokenizer"),
             ("layoutlm", "LayoutLMTokenizer"),
             ("layoutlmv2", "LayoutLMv2Tokenizer"),

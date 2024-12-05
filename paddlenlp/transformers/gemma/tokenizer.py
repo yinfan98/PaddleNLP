@@ -44,6 +44,7 @@ class GemmaTokenizer(PretrainedTokenizer):
     pretrained_init_configuration = {
         "google/gemma-7b": {},
     }
+    padding_side = "left"
 
     def __init__(
         self,

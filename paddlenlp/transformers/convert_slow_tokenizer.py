@@ -106,6 +106,22 @@ class SentencePieceExtractor:
         return vocab, merges
 
 
+class GemmaSentencePieceExtractor(SentencePieceExtractor):
+    def extract(self, vocab_scores=None) -> Tuple[Dict[str, int], List[Tuple]]:
+        """
+        By default will return vocab and merges with respect to their order, by sending `vocab_scores` we're going to
+        order the merges with respect to the piece scores instead.
+        """
+        sp = self.sp
+        vocab = {sp.id_to_piece(index): index for index in range(sp.GetPieceSize())}
+
+        # there is a missing token in the vocab. We have to do this to support merges
+        # "<0x09>" is the bytefallback for `\t`
+        vocab["\t"] = vocab.get("<0x09>")
+
+        merges = generate_merges(vocab, vocab_scores)
+        return vocab, merges
+
 def check_number_comma(piece: str) -> bool:
     return len(piece) < 2 or piece[-1] != "," or not piece[-2].isdigit()
 
@@ -413,6 +429,56 @@ class GPTConverter(Converter):
         return tokenizer
 
 
+class GemmaConverter(SpmConverter):
+    handle_byte_fallback = True
+    SpmExtractor = GemmaSentencePieceExtractor
+    # start and end of turn tokens must be marked as special
+    special_tokens = {"<start_of_turn>", "<end_of_turn>"}
+
+    """"
+    split_by_unicode_script: true
+    split_by_number: true
+    split_by_whitespace: true
+    treat_whitespace_as_suffix: false
+    allow_whitespace_only_pieces: true
+    split_digits: true
+    byte_fallback: true
+    """
+
+    def normalizer(self, proto):
+        return normalizers.Replace(" ", "▁")
+
+    def vocab(self, proto):
+        vocab = [
+            (self.original_tokenizer.pad_token, 0.0),
+            (self.original_tokenizer.eos_token, 0.0),
+            (self.original_tokenizer.bos_token, 0.0),
+        ]
+        for piece in proto.pieces[3:]:
+            if piece.piece == "<0x09>":
+                vocab += [("\t", piece.score)]
+            else:
+                vocab += [(piece.piece, piece.score)]
+        # vocab += [(piece.piece, piece.score) for piece in proto.pieces[3:]]
+        return vocab
+
+    def pre_tokenizer(self, replacement, add_prefix_space):
+        return pre_tokenizers.Split(" ", "merged_with_previous")
+
+    def unk_id(self, proto):
+        unk_id = 3
+        return unk_id
+
+    def decoder(self, replacement, add_prefix_space):
+        return decoders.Sequence(
+            [
+                decoders.Replace("▁", " "),
+                decoders.ByteFallback(),
+                decoders.Fuse(),
+            ]
+        )
+
+
 class LlamaConverter(SpmConverter):
     handle_byte_fallback = True
 
@@ -526,6 +592,7 @@ class Qwen2Converter(Converter):
 
 SLOW_TO_FAST_CONVERTERS = {
     "BertTokenizer": BertConverter,
+    "GemmaTokenizer": GemmaConverter,
     "GPTTokenizer": GPTConverter,
     "LlamaTokenizer": LlamaConverter,
     "Qwen2Tokenizer": Qwen2Converter,
