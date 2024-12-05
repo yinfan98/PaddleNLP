@@ -18,9 +18,8 @@ from typing import Optional, Tuple
 
 from tokenizers import processors
 
-from ..tokenizer_utils_fast import PretrainedTokenizerFast
 from ...utils import is_sentencepiece_available, require_version
-
+from ..tokenizer_utils_fast import PretrainedTokenizerFast
 
 require_version("tokenizers>=0.13.3")
 

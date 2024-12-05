@@ -33,6 +33,7 @@ ops = {
     ">": operator.gt,
 }
 
+
 def _compare_versions(op, got_ver, want_ver, requirement, pkg, hint):
     if got_ver is None or want_ver is None:
         raise ValueError(

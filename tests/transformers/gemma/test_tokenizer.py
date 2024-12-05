@@ -15,10 +15,9 @@
 
 import unittest
 
-from typing import List, Tuple
 from paddlenlp.transformers.gemma.tokenizer import GemmaTokenizer
 from paddlenlp.transformers.gemma.tokenizer_fast import GemmaTokenizerFast
-from paddlenlp.transformers.tokenizer_utils import PretrainedTokenizer, AddedToken
+from paddlenlp.transformers.tokenizer_utils import AddedToken, PretrainedTokenizer
 
 from ..test_tokenizer_common import TokenizerTesterMixin
 

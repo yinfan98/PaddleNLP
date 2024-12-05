@@ -73,6 +73,25 @@ def _get_prepend_scheme(add_prefix_space: bool, original_tokenizer) -> str:
     return prepend_scheme
 
 
+def generate_merges(vocab, vocab_scores):
+    reverse = vocab_scores is not None
+    vocab_scores = dict(vocab_scores) if reverse else vocab
+
+    merges = []
+    for merge, piece_score in vocab_scores.items():
+        local = []
+        for index in range(1, len(merge)):
+            piece_l, piece_r = merge[:index], merge[index:]
+            if piece_l in vocab and piece_r in vocab:
+                local.append((piece_l, piece_r, piece_score))
+        local = sorted(local, key=lambda x: (vocab[x[0]], vocab[x[1]]))
+        merges.extend(local)
+
+    merges = sorted(merges, key=lambda val: (val[2], len(val[0]), len(val[1])), reverse=reverse)
+    merges = [(val[0], val[1]) for val in merges]
+    return merges
+
+
 # Extract the vocab and merge file from sentencepiece file
 class SentencePieceExtractor:
     def __init__(self, model: str):
@@ -121,6 +140,7 @@ class GemmaSentencePieceExtractor(SentencePieceExtractor):
 
         merges = generate_merges(vocab, vocab_scores)
         return vocab, merges
+
 
 def check_number_comma(piece: str) -> bool:
     return len(piece) < 2 or piece[-1] != "," or not piece[-2].isdigit()
