@@ -18,10 +18,8 @@ from typing import Optional, Tuple
 
 from tokenizers import processors
 
-from ...utils import is_sentencepiece_available, require_version
+from ...utils import is_sentencepiece_available
 from ..tokenizer_utils_fast import PretrainedTokenizerFast
-
-require_version("tokenizers>=0.13.3")
 
 if is_sentencepiece_available():
     from .tokenizer import GemmaTokenizer
