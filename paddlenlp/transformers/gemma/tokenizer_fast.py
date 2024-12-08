@@ -20,11 +20,7 @@ from tokenizers import processors
 
 from ...utils import is_sentencepiece_available
 from ..tokenizer_utils_fast import PretrainedTokenizerFast
-
-if is_sentencepiece_available():
-    from .tokenizer import GemmaTokenizer
-else:
-    GemmaTokenizer = None
+from .tokenizer import GemmaTokenizer
 
 VOCAB_FILES_NAMES = {"vocab_file": "tokenizer.model", "tokenizer_file": "tokenizer.json"}
 
